@@ -1,0 +1,32 @@
+@startuml
+title Configuration Source Resolution Flow
+
+start
+:Parse CLI arguments;
+if (vault-url or vault-path provided?) then (yes)
+  if (both provided?) then (yes)
+    :Load from Vault (userpass auth);
+    :Extract config mapping;
+  else (no)
+    :Raise configuration error;
+    stop
+  endif
+else (no)
+  if (encrypted-config provided?) then (yes)
+    :Read encrypted file;
+    :Resolve password (arg/env/prompt);
+    :Decrypt + parse config text;
+  else (no)
+    :Detect plain config path;
+    if (path found?) then (yes)
+      :Read + parse plain config;
+    else (no)
+      :Use empty config;
+    endif
+  endif
+endif
+:Apply CLI overrides;
+:Validate effective settings;
+stop
+
+@enduml

@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sqltracer-postgres
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sqltracer-proxy
+    environment:
+      DATABASE_URL: postgresql://appuser:apppass@postgres:5432/appdb?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - python3
+      - /app/sqltracer.py
+      - --no-tui
+      - --listen
+      - 0.0.0.0:5433
+      - --upstream
+      - postgres:5432
+      - --slow-ms
+      - "50"
+      - --log-level
+      - INFO
+    ports:
+      - "5433:5433"
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sqltracer-client
+    depends_on:
+      postgres:
+        condition: service_healthy
+      proxy:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://appuser:apppass@proxy:5433/appdb?sslmode=disable
+      CLIENT_WAIT_TIMEOUT: "60"
+    command:
+      - python3
+      - /app/demo_pg_client.py
+    restart: "no"

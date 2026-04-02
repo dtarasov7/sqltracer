@@ -1,0 +1,18 @@
+@startuml
+title Контекст системы SQLTracer
+
+actor "Разработчик / Оператор" as User
+node "Приложение" as App
+node "sqltracer.py\n(PostgreSQL-прокси + TUI/headless)" as Tracer
+database "PostgreSQL" as Pg
+cloud "HashiCorp Vault\n(опциональный источник конфига)" as Vault
+file "Обычный / зашифрованный конфиг" as Config
+
+User --> Tracer : запуск, мониторинг, анализ
+App --> Tracer : трафик PostgreSQL wire protocol
+Tracer --> Pg : проксирование трафика
+Tracer --> Vault : чтение конфига через userpass
+Tracer --> Config : загрузка конфиг-файлов
+Tracer --> User : TUI, headless stdout, файлы экспорта/отчета
+
+@enduml

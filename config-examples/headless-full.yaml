@@ -1,0 +1,37 @@
+# Full headless configuration example with filtering and file export.
+# Start with:
+#   python3 sqltracer.py --config ./config-examples/headless-full.yaml
+
+driver: postgres
+listen: 127.0.0.1:6433
+upstream: 127.0.0.1:5432
+max_events: 5000
+max_connections: 250
+max_pending_events_per_connection: 1024
+slow_threshold: 120ms
+refresh_ms: 250
+socket_timeout_seconds: 30
+max_startup_packet_bytes: 1048576
+max_protocol_packet_bytes: 33554432
+no_tui: true
+allow_remote_listen: false
+client_allowlist: 127.0.0.1/32
+log_level: WARNING
+log_file: ./test/sqltracer-headless.log
+dsn_env: DATABASE_URL
+allow_unsafe_explain_analyze: false
+filter: '(error or slow or nplus1) and not op:begin and not op:commit'
+response_body: preview
+save_file: ./test/sqltracer-headless.json
+save_format: json
+save_profile: full
+save_response: preview
+report_file: ./test/sqltracer-headless-report.md
+report_format: markdown
+report_top: 12
+jsonl_flush_every: 50
+nplus1:
+  threshold: 5
+  window: 1.5s
+  cooldown: 10s
+  max_tracked_keys: 5000

@@ -1,0 +1,30 @@
+@startuml
+title SQLTracer Runtime Components
+
+package "sqltracer.py" {
+  component "PostgresProxy" as Proxy
+  component "PostgresProxyConnection" as Conn
+  component "EventStore" as Store
+  component "NPlusOneDetector" as N1
+  component "CursesApp" as TUI
+  component "StdoutEventSink" as StdoutSink
+  component "FileEventSink" as FileSink
+  component "SummaryReportSink" as ReportSink
+}
+
+component "sqltracer_packetio.py" as PacketIO
+component "sqltracer_config_sources.py" as ConfigSources
+database "PostgreSQL" as Pg
+
+ConfigSources --> Proxy : runtime settings
+Proxy --> Conn : spawn per TCP connection
+Conn --> PacketIO : read startup/protocol packets
+Conn --> Store : captured events / notices
+Store --> N1 : N+1 classification
+TUI --> Store : snapshots + controls
+StdoutSink --> Store : consume new events
+FileSink --> Store : consume new events
+ReportSink --> Store : consume new events
+Conn --> Pg : relay PostgreSQL traffic
+
+@enduml

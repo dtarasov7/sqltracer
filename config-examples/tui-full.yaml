@@ -1,0 +1,37 @@
+# Full TUI-oriented configuration example.
+# Start with:
+#   python3 sqltracer.py --config ./config-examples/tui-full.yaml
+
+driver: postgres
+listen: 127.0.0.1:5433
+upstream: 127.0.0.1:5432
+max_events: 3000
+max_connections: 200
+max_pending_events_per_connection: 1024
+slow_ms: 80
+refresh_ms: 150
+socket_timeout_seconds: 30
+max_startup_packet_bytes: 1048576
+max_protocol_packet_bytes: 33554432
+no_tui: false
+allow_remote_listen: false
+client_allowlist: 127.0.0.1/32
+log_level: INFO
+log_file: ./test/sqltracer-tui.log
+dsn: postgresql://appuser:apppass@127.0.0.1:5432/appdb?sslmode=disable
+allow_unsafe_explain_analyze: false
+filter: 'table:users or table:orders or slow or error or nplus1'
+response_body: none
+save_file: ./test/sqltracer-events.jsonl
+save_format: jsonl
+save_profile: default
+save_response: preview
+report_file: ./test/sqltracer-tui-report.json
+report_format: json
+report_top: 8
+jsonl_flush_every: 50
+nplus1:
+  threshold: 4
+  window: 2s
+  cooldown: 12s
+  max_tracked_keys: 5000

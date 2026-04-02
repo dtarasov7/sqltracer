@@ -1,0 +1,36 @@
+# Configuration example for the local Docker Compose demo.
+# Typical use:
+#   docker compose run --rm proxy python3 /app/sqltracer.py --config /app/config-examples/docker-demo.yaml
+
+driver: postgres
+listen: 0.0.0.0:5433
+upstream: postgres:5432
+max_events: 4000
+max_connections: 150
+max_pending_events_per_connection: 1024
+slow_threshold: 50ms
+refresh_ms: 200
+socket_timeout_seconds: 30
+max_startup_packet_bytes: 1048576
+max_protocol_packet_bytes: 33554432
+no_tui: true
+allow_remote_listen: true
+log_level: INFO
+log_file: /tmp/sqltracer-demo.log
+dsn_env: DATABASE_URL
+allow_unsafe_explain_analyze: false
+filter: 'table:users or table:orders or error or slow or nplus1'
+response_body: preview
+save_file: /tmp/sqltracer-demo.jsonl
+save_format: jsonl
+save_profile: default
+save_response: none
+report_file: /tmp/sqltracer-demo-report.json
+report_format: json
+report_top: 10
+jsonl_flush_every: 50
+nplus1:
+  threshold: 4
+  window: 2s
+  cooldown: 15s
+  max_tracked_keys: 5000

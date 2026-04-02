@@ -1,0 +1,18 @@
+@startuml
+title SQLTracer System Context
+
+actor "Developer / Operator" as User
+node "Application" as App
+node "sqltracer.py\n(PostgreSQL Proxy + TUI/Headless)" as Tracer
+database "PostgreSQL" as Pg
+cloud "HashiCorp Vault\n(optional config source)" as Vault
+file "Plain / Encrypted Config" as Config
+
+User --> Tracer : run, monitor, inspect
+App --> Tracer : PostgreSQL wire protocol traffic
+Tracer --> Pg : forward traffic
+Tracer --> Vault : read config via userpass
+Tracer --> Config : load config files
+Tracer --> User : TUI, headless stdout, export/report files
+
+@enduml

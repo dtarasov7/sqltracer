@@ -1,0 +1,25 @@
+@startuml
+title Представления данных и пути экспорта
+
+rectangle "EventStore" as Store
+rectangle "List View" as ListView
+rectangle "Inspector View" as Inspector
+rectangle "Analytics View" as Analytics
+rectangle "Timeline View" as Timeline
+rectangle "EXPLAIN View" as Explain
+rectangle "StdoutEventSink" as Stdout
+rectangle "FileEventSink\n(JSONL/JSON)" as FileSink
+rectangle "SummaryReportSink\n(JSON/Markdown)" as ReportSink
+rectangle "Экспорт response\n(JSON выбранного события)" as RespExport
+
+Store --> ListView : снапшоты событий
+Store --> Inspector : детали выбранного события/транзакции
+Store --> Analytics : групповые метрики по normalized query
+Store --> Timeline : строки timeline по query/transaction
+Inspector --> Explain : выбранный запрос + аргументы
+Store --> Stdout : поток вывода в headless-режиме
+Store --> FileSink : сохранение сырых событий
+Store --> ReportSink : агрегированный отчет slow/N+1/error
+Inspector --> RespExport : экспорт payload выбранного response
+
+@enduml

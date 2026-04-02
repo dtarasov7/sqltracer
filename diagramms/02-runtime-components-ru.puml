@@ -1,0 +1,30 @@
+@startuml
+title Компоненты выполнения SQLTracer
+
+package "sqltracer.py" {
+  component "PostgresProxy" as Proxy
+  component "PostgresProxyConnection" as Conn
+  component "EventStore" as Store
+  component "NPlusOneDetector" as N1
+  component "CursesApp" as TUI
+  component "StdoutEventSink" as StdoutSink
+  component "FileEventSink" as FileSink
+  component "SummaryReportSink" as ReportSink
+}
+
+component "sqltracer_packetio.py" as PacketIO
+component "sqltracer_config_sources.py" as ConfigSources
+database "PostgreSQL" as Pg
+
+ConfigSources --> Proxy : параметры запуска
+Proxy --> Conn : запуск обработчика на соединение
+Conn --> PacketIO : чтение startup/protocol пакетов
+Conn --> Store : события / уведомления
+Store --> N1 : классификация N+1
+TUI --> Store : снапшоты + управление
+StdoutSink --> Store : потребление новых событий
+FileSink --> Store : потребление новых событий
+ReportSink --> Store : потребление новых событий
+Conn --> Pg : ретрансляция трафика PostgreSQL
+
+@enduml

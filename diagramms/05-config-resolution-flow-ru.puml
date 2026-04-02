@@ -1,0 +1,32 @@
+@startuml
+title Поток выбора источника конфигурации
+
+start
+:Парсинг CLI-аргументов;
+if (передан vault-url или vault-path?) then (да)
+  if (переданы оба?) then (да)
+    :Загрузка из Vault (userpass auth);
+    :Извлечение config-словаря;
+  else (нет)
+    :Ошибка конфигурации;
+    stop
+  endif
+else (нет)
+  if (передан encrypted-config?) then (да)
+    :Чтение зашифрованного файла;
+    :Получение пароля (arg/env/prompt);
+    :Расшифровка + парсинг конфига;
+  else (нет)
+    :Поиск plain config path;
+    if (путь найден?) then (да)
+      :Чтение + парсинг plain config;
+    else (нет)
+      :Использование пустого конфига;
+    endif
+  endif
+endif
+:Применение CLI-overrides;
+:Валидация итоговых настроек;
+stop
+
+@enduml

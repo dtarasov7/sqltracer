@@ -1,0 +1,25 @@
+@startuml
+title Data Views and Export Paths
+
+rectangle "EventStore" as Store
+rectangle "List View" as ListView
+rectangle "Inspector View" as Inspector
+rectangle "Analytics View" as Analytics
+rectangle "Timeline View" as Timeline
+rectangle "EXPLAIN View" as Explain
+rectangle "StdoutEventSink" as Stdout
+rectangle "FileEventSink\n(JSONL/JSON)" as FileSink
+rectangle "SummaryReportSink\n(JSON/Markdown)" as ReportSink
+rectangle "Response Export\n(selected event JSON)" as RespExport
+
+Store --> ListView : event snapshots
+Store --> Inspector : selected event/transaction details
+Store --> Analytics : grouped metrics by normalized query
+Store --> Timeline : query/transaction timeline rows
+Inspector --> Explain : selected query + args
+Store --> Stdout : headless stream output
+Store --> FileSink : persisted raw events
+Store --> ReportSink : aggregated slow/N+1/error report
+Inspector --> RespExport : export selected response payload
+
+@enduml

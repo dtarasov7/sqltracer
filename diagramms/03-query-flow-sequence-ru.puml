@@ -1,0 +1,24 @@
+@startuml
+title Поток захвата запроса и ответа
+
+actor Client
+participant "PostgresProxyConnection" as Conn
+participant "sqltracer_packetio" as PacketIO
+participant "PostgreSQL" as Pg
+participant "EventStore" as Store
+participant "NPlusOneDetector" as N1
+participant "TUI / Sink-и" as Consumers
+
+Client -> Conn : отправка Query / Parse+Bind+Execute
+Conn -> PacketIO : read_protocol_message(client)
+Conn -> Conn : _queue_pending_event(...)
+Conn -> Pg : пересылка протокольного сообщения
+Pg --> Conn : RowDescription / DataRow / CommandComplete
+Conn -> PacketIO : read_protocol_message(upstream)
+Conn -> Conn : сбор preview ответа\n(лимит по строкам/байтам)
+Conn -> Store : add(pending, rows, status/error)
+Store -> N1 : record(normalized_query, scope, args_signature)
+Store --> Consumers : snapshot/wait_for_change
+Conn --> Client : пересылка ответа upstream
+
+@enduml
