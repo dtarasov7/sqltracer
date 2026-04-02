@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](./CHANGELOG.md)
 
+![sqltracer screenshot](images/sqltracer.png)
+
 `sqltracer` is a Python 3 implementation of a PostgreSQL SQL traffic viewer.
 
 It works as a TCP proxy between your application and PostgreSQL and shows captured activity in a terminal UI:

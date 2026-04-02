@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](./CHANGELOG-ru.md)
 
+![sqltracer screenshot](images/sqltracer.png)
+
 `sqltracer` - это реализация на Python 3 просмотрщика SQL-трафика для PostgreSQL.
 
 Программа работает как TCP-прокси между приложением и PostgreSQL и показывает в TUI:
